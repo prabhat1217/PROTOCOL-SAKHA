@@ -1,11 +1,11 @@
-name: Build Police Duty Rotation V4
+name: Build Police Duty Rotation Android
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-android:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -16,14 +16,36 @@ jobs:
         with:
           node-version: 22
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - name: Install dependencies
         run: npm install
 
-      - name: Build Windows EXE
-        run: npm run dist
+      - name: Prepare web files
+        run: |
+          rm -rf www
+          mkdir -p www
+          cp index.html www/
 
-      - name: Upload EXE
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Police-Duty-Rotation-Windows
-          path: dist/*.exe
+          name: Police-Duty-Rotation-Android
+          path: android/app/build/outputs/apk/debug/app-debug.apk
