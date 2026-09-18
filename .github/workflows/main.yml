@@ -1,32 +1,44 @@
-name: Build Police Duty Rotation V4
-
-on:
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Windows EXE
-        run: npm run dist
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-          GH_TOKEN: ""
-
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
-        with:
-          name: Police-Duty-Rotation-Windows
-          path: dist/*.exe
+{
+  "name": "police-duty-rotation-v4",
+  "version": "4.0.1",
+  "description": "પ્રોટોકોલ શાખા ડ્યુટી રોટેશન અને બંદોબસ્ત વ્યવસ્થાપન",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/core": "7.4.3",
+    "@capacitor/android": "7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.4.3",
+    "electron": "38.1.0",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "in.gujaratpolice.protocoldutyrotation",
+    "productName": "Police Duty Rotation",
+    "files": [
+      "index.html",
+      "main.js",
+      "package.json",
+      "logo.png",
+      "icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
