@@ -1,4 +1,4 @@
-name: Build Police Duty Rotation Android
+name: Build PROTOCOL SAKHA Android
 
 on:
   workflow_dispatch:
@@ -54,6 +54,7 @@ jobs:
           mkdir -p android/app/src/main/res/mipmap-xhdpi
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          mkdir -p android/app/src/main/res/mipmap-anydpi-v26
 
           convert icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           convert icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
@@ -67,6 +68,30 @@ jobs:
           cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
+          cat > android/app/src/main/res/values/colors.xml <<'EOF'
+          <resources>
+              <color name="ic_launcher_background">#FFFFFF</color>
+          </resources>
+          EOF
+
+          cat > android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background" />
+              <foreground android:drawable="@mipmap/ic_launcher" />
+          </adaptive-icon>
+          EOF
+
+          cat > android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml <<'EOF'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background" />
+              <foreground android:drawable="@mipmap/ic_launcher" />
+          </adaptive-icon>
+          EOF
+
+      - name: Set App Name
+        run: |
+          sed -i 's/<string name="app_name">.*<\/string>/<string name="app_name">PROTOCOL SAKHA<\/string>/' android/app/src/main/res/values/strings.xml
+
       - name: Build Debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
@@ -74,6 +99,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Police-Duty-Rotation-Android
+          name: PROTOCOL-SAKHA-Android
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
