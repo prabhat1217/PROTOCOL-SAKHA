@@ -47,33 +47,63 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Set Android App Icon
+      - name: FORCE NEW APP ICON
         run: |
+          # Remove old adaptive icons created by Capacitor
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26
+          rm -rf android/app/src/main/res/mipmap-anydpi
+
+          # Create all launcher icon folders
           mkdir -p android/app/src/main/res/mipmap-mdpi
           mkdir -p android/app/src/main/res/mipmap-hdpi
           mkdir -p android/app/src/main/res/mipmap-xhdpi
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
 
+          # Put YOUR icon.png in every Android density
           convert icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
           convert icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
           convert icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
           convert icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           convert icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
+          # Round icon
           cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
+          # Force Android Manifest to use our icon
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+
+          s = re.sub(
+              r'android:icon="[^"]*"',
+              'android:icon="@mipmap/ic_launcher"',
+              s
+          )
+
+          s = re.sub(
+              r'android:roundIcon="[^"]*"',
+              'android:roundIcon="@mipmap/ic_launcher_round"',
+              s
+          )
+
+          p.write_text(s)
+          PY
+
       - name: Build APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew clean assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: PROTOCOL-SAKHA-Android
+          name: PROTOCOL-SAKHA-Android-NEW-ICON
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
