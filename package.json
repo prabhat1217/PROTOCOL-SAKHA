@@ -10,21 +10,35 @@
     "cap:sync": "cap sync android"
   },
   "dependencies": {
-    "@capacitor/core": "^7.4.3",
-    "@capacitor/android": "^7.4.3"
+    "@capacitor/core": "7.4.3",
+    "@capacitor/android": "7.4.3"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.4.3",
-    "@capacitor/assets": "^3.0.0",
-    "electron": "^38.1.0",
-    "electron-builder": "^26.0.12"
+    "@capacitor/cli": "7.4.3",
+    "electron": "38.1.0",
+    "electron-builder": "26.0.12"
   },
   "build": {
     "appId": "in.gujaratpolice.protocoldutyrotation",
     "productName": "Police Duty Rotation",
-    "files": ["index.html", "main.js", "package.json", "logo.png", "icon.png"],
-    "directories": {"output": "dist"},
-    "win": {"target": "nsis", "icon": "icon.ico"},
-    "nsis": {"oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true}
+    "files": [
+      "index.html",
+      "main.js",
+      "package.json",
+      "logo.png",
+      "icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
